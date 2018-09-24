@@ -1532,6 +1532,8 @@ static int do_umount(struct mount *mnt, int flags)
 	struct super_block *sb = mnt->mnt.mnt_sb;
 	int retval;
 
+	printk("hpcx %s %p 0x%x\n", __func__, mnt, flags);
+
 	retval = security_sb_umount(&mnt->mnt, flags);
 	if (retval)
 		return retval;
@@ -1727,6 +1729,8 @@ SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
 	int retval;
 	int lookup_flags = 0;
 
+	printk("hpcx %s 0x%x\n", __func__, flags);
+
 	if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))
 		return -EINVAL;
 
@@ -1751,6 +1755,7 @@ SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
 	if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))
 		goto dput_and_out;
 
+	printk("hpcx %s %p %s 0x%x\n", __func__, mnt, getname(name)->name, flags);
 	retval = do_umount(mnt, flags);
 dput_and_out:
 	/* we mustn't call path_put() as that would clear mnt_expiry_mark */
@@ -3090,6 +3095,10 @@ SYSCALL_DEFINE5(mount, char __user *, dev_name, char __user *, dir_name,
 	ret = PTR_ERR(options);
 	if (IS_ERR(options))
 		goto out_data;
+
+	printk("hpcx %s type=%s dev=%s to dir=%s 0x%lx\n", __func__, kernel_type,
+		kernel_dev,
+		copy_mount_string(dir_name), flags);
 
 	ret = do_mount(kernel_dev, dir_name, kernel_type, flags, options);
 

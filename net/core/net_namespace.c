@@ -302,6 +302,7 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
 			goto out_undo;
 	}
 out:
+	hpcx_netns(net);
 	return error;
 
 out_undo:
@@ -350,6 +351,7 @@ out_free:
 
 static void net_free(struct net *net)
 {
+	hpcx_netns(net);
 	kfree(rcu_access_pointer(net->gen));
 	kmem_cache_free(net_cachep, net);
 }
@@ -477,6 +479,7 @@ void __put_net(struct net *net)
 {
 	/* Cleanup the network namespace in process context */
 	unsigned long flags;
+	hpcx_netns2(net);
 
 	spin_lock_irqsave(&cleanup_list_lock, flags);
 	list_add(&net->cleanup_list, &cleanup_list);

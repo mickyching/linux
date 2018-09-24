@@ -188,6 +188,14 @@ struct net {
 	RH_KABI_EXTEND(struct fib_notifier_ops *ipv6_notifier_ops)
 };
 
+#define hpcx_netns(net) printk("hpcx %s: %p [%u] passive=%d count=%d\n", __func__, net, net->proc_inum, atomic_read(&net->passive), atomic_read(&net->count));
+#define hpcx_netns2(net) do {		\
+	hpcx_netns(net);		\
+	dump_stack();			\
+	printk("hpcx %s\n", "--");	\
+} while (0);
+
+
 /*
  * ifindex generation is per-net namespace, and loopback is
  * always the 1st device in ns (see net_dev_init), thus any
